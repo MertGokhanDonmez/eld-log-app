@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
+import ELDLogChart from "./ELDLogChart"; // Import the new ELDLogChart component
 
 const MAPBOX_API_KEY =
   "pk.eyJ1IjoiZ29rZXluIiwiYSI6ImNtN3kzc3hmbzA0MDEycXM1ajM3cnZiZDcifQ.UzQmL2mATngTDUTgs1vNDg";
@@ -18,6 +19,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [map, setMap] = useState(null);
   const [menuOpen, setMenuOpen] = useState(true);
+  const [totalMiles, setTotalMiles] = useState(0); // Add state for total miles
 
   useEffect(() => {
     const initializeMap = new mapboxgl.Map({
@@ -56,6 +58,7 @@ export default function Home() {
       const data = await response.json();
       if (data.routes && data.routes.length > 0) {
         setRouteData(data.routes[0].geometry.coordinates);
+        setTotalMiles(data.routes[0].distance / 1609.34); // Convert meters to miles
       } else {
         setError("No route found.");
       }
@@ -128,15 +131,15 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="flex justify-center flex-col items-center">
-          <h1 className="text-4xl font-bold">Select Your Locations</h1>
+      <div className="flex portrait:flex-col h-screen w-full items-center justify-center px-4">
+        <div className="landscape:w-1/4 portrait:h-[15%] h-[80%] flex justify-center text-center flex-col items-center">
+          <h1 className="lg:text-4xl font-bold">Select Your Locations</h1>
           <span className="text-gray-500 text-sm">
             (Pickup, Dropoff, Current Location)
           </span>
         </div>
-        <div className="basis-3/4 h-3/4 bg-gray-200 shadow-lg mx-8 relative">
-          <div id="map" className="h-full bg-gray-200"></div>
+        <div className="landscape:w-3/4 w-full portrait:h-[85%] h-[80%] relative">
+          <div id="map" className="h-[95%] shadow-lg"></div>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="absolute top-4 left-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
@@ -197,8 +200,11 @@ export default function Home() {
           )}
         </div>
       </div>
-      <div className="h-screen">
-        <h1 className="text-4xl font-bold">ELD Log Sheets</h1>
+      <div className="h-screen w-full flex flex-col items-center justify-center">
+        <h1 className="lg:text-4xl font-bold">ELD Log Sheets</h1>
+        <div className="bg-gray-200 shadow-lg w-[90%]">
+          <ELDLogChart totalMiles={totalMiles} cycle={cycle} />
+        </div>
       </div>
     </div>
   );
