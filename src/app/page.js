@@ -17,6 +17,7 @@ export default function Home() {
   const [routeData, setRouteData] = useState(null);
   const [error, setError] = useState(null);
   const [map, setMap] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(true);
 
   useEffect(() => {
     const initializeMap = new mapboxgl.Map({
@@ -65,6 +66,10 @@ export default function Home() {
 
   const handleRoute = async () => {
     setError(null);
+    if (!pickup || !dropoff || !current || !cycle) {
+      setError("All fields are required.");
+      return;
+    }
     const pickupLocation = await fetchCoordinates(pickup);
     const dropoffLocation = await fetchCoordinates(dropoff);
     const currentLocation = await fetchCoordinates(current);
@@ -122,55 +127,79 @@ export default function Home() {
   }, [map, pickupCoords, dropoffCoords, currentCoords, routeData]);
 
   return (
-    <div className="flex h-screen w-full items-center p-4 flex-row">
-      <div className="basis-1/3 flex flex-col gap-4 mx-8">
-        <h1 className="text-xl font-bold">Stops</h1>
-        <input
-          type="text"
-          placeholder="Current Location"
-          value={current}
-          onChange={(e) => setCurrent(e.target.value)}
-          className="p-2 border rounded"
-        />
-        <input
-          type="text"
-          placeholder="Pickup Location"
-          value={pickup}
-          onChange={(e) => setPickup(e.target.value)}
-          className="p-2 border rounded"
-        />
-        <input
-          type="text"
-          placeholder="Dropoff Location"
-          value={dropoff}
-          onChange={(e) => setDropoff(e.target.value)}
-          className="p-2 border rounded"
-        />
-        <h2 className="text-lg font-semibold">Hour Cycle</h2>
-        <input
-          type="value"
-          placeholder="Hour Cycle"
-          value={cycle}
-          onChange={(e) => setCycle(e.target.value)}
-          className="p-2 border rounded"
-        />
-        <button
-          onClick={handleRoute}
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-        >
-          Show Driving Logs
-        </button>
-      </div>
-      <div className="basis-2/3 h-3/4 bg-gray-200 shadow-lg">
-        <div id="map" className="h-full h-3/4 bg-gray-200"></div>
-      </div>
-
-      {error && (
-        <div className="w-3/4 bg-red-100 text-red-700 p-4 rounded shadow-lg">
-          <h2 className="text-lg font-semibold">Error</h2>
-          <p>{error}</p>
+    <div className="flex flex-col items-center justify-center">
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="flex justify-center flex-col items-center">
+          <h1 className="text-4xl font-bold">Select Your Locations</h1>
+          <span className="text-gray-500 text-sm">
+            (Pickup, Dropoff, Current Location)
+          </span>
         </div>
-      )}
+        <div className="basis-3/4 h-3/4 bg-gray-200 shadow-lg mx-8 relative">
+          <div id="map" className="h-full bg-gray-200"></div>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="absolute top-4 left-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          >
+            ☰
+          </button>
+          {menuOpen && (
+            <div className="absolute top-16 left-4 bg-white p-4 rounded shadow-lg w-64">
+              <div className="flex flex-col gap-3">
+                <h1 className="text-xl font-bold">Stops</h1>
+                <input
+                  type="text"
+                  placeholder="Current Location"
+                  value={current}
+                  onChange={(e) => setCurrent(e.target.value)}
+                  className="p-2 border rounded w-full"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Pickup Location"
+                  value={pickup}
+                  onChange={(e) => setPickup(e.target.value)}
+                  className="p-2 border rounded w-full"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Dropoff Location"
+                  value={dropoff}
+                  onChange={(e) => setDropoff(e.target.value)}
+                  className="p-2 border rounded w-full"
+                  required
+                />
+                <h3 className="font-semibold">Hour Cycle</h3>
+                <input
+                  type="value"
+                  placeholder="Hour Cycle"
+                  value={cycle}
+                  onChange={(e) => setCycle(e.target.value)}
+                  className="p-2 border rounded w-full"
+                  required
+                />
+                <button
+                  onClick={handleRoute}
+                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full"
+                >
+                  Show Driving Logs
+                </button>
+              </div>
+              {error && (
+                <div className="w-full bg-red-100 text-red-700 p-4 rounded shadow-lg mt-4">
+                  <h2 className="text-lg font-semibold">Error</h2>
+                  <p>{error}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="h-screen">
+        <h1 className="text-4xl font-bold">ELD Log Sheets</h1>
+      </div>
     </div>
   );
 }
