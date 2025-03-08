@@ -6,10 +6,11 @@ const ELDLogChart = ({ totalMiles, cycle }) => {
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
+
     const chart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: Array.from({ length: 25 }, (_, i) => `${i}:00`),
+        labels: Array.from({ length: 25 }, (_, i) => `${i}`),
         datasets: [
           {
             label: "ELD Log",
@@ -18,59 +19,127 @@ const ELDLogChart = ({ totalMiles, cycle }) => {
             fill: false,
             stepped: true,
             pointRadius: 0,
+            borderWidth: 7,
           },
         ],
       },
       options: {
+        maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: false, // Disable legend
+            display: false,
           },
         },
         scales: {
           x: {
-            position: "top", // Move x-axis to the top
+            position: "top",
+            min: 0,
+            max: 24,
             ticks: {
               callback: function (value) {
-                if (value === 0 || value === 24) return "Midnight";
+                if (value === 0 || value === 24) return ["Mid-", "night"];
                 if (value === 12) return "Noon";
-                return `${value}:00`;
+                return value % 12 || 12;
               },
+              stepSize: 1,
+              autoSkip: false,
+              font: {
+                size: 14,
+              },
+              color: "black",
+              rotation: 0,
+              minRotation: 0,
+              maxRotation: 0,
             },
             grid: {
               display: true,
               drawOnChartArea: true,
               drawTicks: true,
-              tickLength: 10,
-              lineWidth: 1,
-              color: "rgba(0, 0, 0, 0.2)",
+              tickLength: 0,
+              lineWidth: 2,
+              color: "black",
             },
           },
           y: {
+            min: 0,
+            max: 3,
+            position: "left",
+            reverse: true,
             ticks: {
               callback: function (value) {
                 const statuses = [
-                  "Off-Duty",
-                  "Sleeper Berth",
-                  "Driving",
-                  "On-Duty",
+                  "1. Off-Duty",
+                  "2. Sleeper Berth",
+                  "3. Driving",
+                  "4. On-Duty (not driving)",
                 ];
                 return statuses[value];
               },
               stepSize: 1,
-              max: 3,
+              font: {
+                size: 16,
+              },
+              color: "black",
+              crossAlign: "far",
+              padding: 10,
             },
             grid: {
               display: true,
               drawOnChartArea: true,
               drawTicks: true,
-              tickLength: 10,
-              lineWidth: 1,
-              color: "rgba(0, 0, 0, 0.2)",
+              tickLength: 0,
+              lineWidth: 2,
+              color: "black",
             },
           },
         },
       },
+      plugins: [
+        {
+          id: "customGridLines",
+          beforeDraw: (chart) => {
+            const ctx = chart.ctx;
+            const chartArea = chart.chartArea;
+
+            for (let i = 0; i < 24; i++) {
+              for (let j = 0; j <= 3; j++) {
+                const x = chart.scales.x.getPixelForValue(i);
+                const nextX = chart.scales.x.getPixelForValue(i + 1);
+                const y = chart.scales.y.getPixelForValue(j);
+                const nextY = chart.scales.y.getPixelForValue(j + 1);
+
+                // Hücre merkezini bulmak için ortalama değerler
+                const centerX = (x + nextX) / 2;
+                const centerY = (y + nextY) / 2;
+
+                // Kısa dikey çizgi (hücrenin sol kenarında)
+                ctx.beginPath();
+                ctx.moveTo(x + 2, centerY - 5);
+                ctx.lineTo(x + 2, centerY + 5);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Kısa dikey çizgi (hücrenin sağ kenarında)
+                ctx.beginPath();
+                ctx.moveTo(nextX - 2, centerY - 5);
+                ctx.lineTo(nextX - 2, centerY + 5);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Uzun dikey çizgi (hücrenin ortasında)
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - 10);
+                ctx.lineTo(centerX, centerY + 10);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+              }
+            }
+          },
+        },
+      ],
     });
 
     return () => {
@@ -116,12 +185,14 @@ const ELDLogChart = ({ totalMiles, cycle }) => {
   return (
     <div className="p-4 bg-gray-100 rounded-lg shadow-md">
       <div className="text-xl font-bold mb-2">ELD Log Chart</div>
-      <div className="w-full h-64 bg-white rounded-lg shadow-inner">
-        <canvas ref={chartRef} />
+      <div className="w-full h-96 bg-white rounded-lg shadow-inner">
+        <canvas ref={chartRef} /> {/* Increased width and height */}
       </div>
       <div className="mt-4">
         <div className="text-gray-700">Total Miles: {totalMiles}</div>
-        <div className="text-gray-700">Cycle: {cycle} hours</div>
+        <div className="text-gray-700">
+          Cycle: {cycle} {cycle > 1 ? "hours" : "hour"}
+        </div>
       </div>
     </div>
   );

@@ -208,14 +208,11 @@ export default function Home() {
           )}
         </div>
       </div>
-      <div className="w-full flex flex-col items-center justify-center overflow-y-auto">
+      <div className="w-full flex flex-col items-center justify-center">
         <h1 className="lg:text-4xl font-bold">ELD Log Sheets</h1>
         <div className="w-[90%] flex flex-col gap-6">
           {Array.from({ length: calcSheet() }).map((_, index) => (
-            <div
-              key={index}
-              className="shadow-lg border-2 p-4 rounded-lg bg-white"
-            >
+            <div key={index} className=" border-2 p-4 rounded-lg bg-white">
               <ELDLogChart totalMiles={totalMiles} cycle={cycle} />
             </div>
           ))}
