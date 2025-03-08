@@ -82,6 +82,7 @@ export default function Home() {
       setPickupCoords(pickupLocation);
       setDropoffCoords(dropoffLocation);
       await fetchRoute(pickupLocation, dropoffLocation, currentLocation);
+      setMenuOpen(false);
     } else {
       setError("One or both locations could not be found. Try again.");
     }
