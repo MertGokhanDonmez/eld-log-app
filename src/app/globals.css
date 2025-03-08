@@ -1,4 +1,6 @@
 @import "tailwindcss";
 @import 'mapbox-gl/dist/mapbox-gl.css';
 
-
+.custom-margin {
+    margin-bottom: 1.5rem; /* 24px */
+  }

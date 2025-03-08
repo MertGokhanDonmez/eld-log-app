@@ -16,28 +16,26 @@ const ELDLogChart = ({ totalMiles, cycle }) => {
             data: generateELDData(totalMiles, cycle),
             borderColor: "black",
             fill: false,
-            pointRadius: (context) => {
-              const index = context.dataIndex;
-              const data = context.dataset.data;
-              if (
-                index === 0 ||
-                index === data.length - 1 ||
-                data[index] !== data[index - 1] ||
-                data[index] !== data[index + 1]
-              ) {
-                return 5; // Show point at the corners and status changes
-              }
-              return 0; // Hide point on the line
-            },
+            stepped: true,
+            pointRadius: 0,
           },
         ],
       },
       options: {
+        plugins: {
+          legend: {
+            display: false, // Disable legend
+          },
+        },
         scales: {
           x: {
-            title: {
-              display: true,
-              text: "Time (Hours)",
+            position: "top", // Move x-axis to the top
+            ticks: {
+              callback: function (value) {
+                if (value === 0 || value === 24) return "Midnight";
+                if (value === 12) return "Noon";
+                return `${value}:00`;
+              },
             },
             grid: {
               display: true,
@@ -45,20 +43,10 @@ const ELDLogChart = ({ totalMiles, cycle }) => {
               drawTicks: true,
               tickLength: 10,
               lineWidth: 1,
-              color: (context) => {
-                const index = context.tick.index;
-                if (index % 2 === 0) {
-                  return "rgba(0, 0, 0, 0.2)"; // Short lines color
-                }
-                return "rgba(0, 0, 0, 0.5)"; // Long lines color
-              },
+              color: "rgba(0, 0, 0, 0.2)",
             },
           },
           y: {
-            title: {
-              display: true,
-              text: "Status",
-            },
             ticks: {
               callback: function (value) {
                 const statuses = [
@@ -69,6 +57,8 @@ const ELDLogChart = ({ totalMiles, cycle }) => {
                 ];
                 return statuses[value];
               },
+              stepSize: 1,
+              max: 3,
             },
             grid: {
               display: true,
@@ -76,13 +66,7 @@ const ELDLogChart = ({ totalMiles, cycle }) => {
               drawTicks: true,
               tickLength: 10,
               lineWidth: 1,
-              color: (context) => {
-                const index = context.tick.index;
-                if (index % 2 === 0) {
-                  return "rgba(0, 0, 0, 0.2)"; // Short lines color
-                }
-                return "rgba(0, 0, 0, 0.5)"; // Long lines color
-              },
+              color: "rgba(0, 0, 0, 0.2)",
             },
           },
         },
@@ -130,8 +114,15 @@ const ELDLogChart = ({ totalMiles, cycle }) => {
   };
 
   return (
-    <div>
-      <canvas ref={chartRef} />
+    <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+      <div className="text-xl font-bold mb-2">ELD Log Chart</div>
+      <div className="w-full h-64 bg-white rounded-lg shadow-inner">
+        <canvas ref={chartRef} />
+      </div>
+      <div className="mt-4">
+        <div className="text-gray-700">Total Miles: {totalMiles}</div>
+        <div className="text-gray-700">Cycle: {cycle} hours</div>
+      </div>
     </div>
   );
 };

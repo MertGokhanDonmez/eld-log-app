@@ -130,6 +130,13 @@ export default function Home() {
     }
   }, [map, pickupCoords, dropoffCoords, currentCoords, routeData]);
 
+  const calcSheet = () => {
+    let day = cycle / 24;
+    day = Math.ceil(day); // Round up to the nearest integer
+    console.log(day);
+    return day;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="flex portrait:flex-col h-screen w-full items-center justify-center px-4">
@@ -201,10 +208,17 @@ export default function Home() {
           )}
         </div>
       </div>
-      <div className="h-screen w-full flex flex-col items-center justify-center">
+      <div className="w-full flex flex-col items-center justify-center overflow-y-auto">
         <h1 className="lg:text-4xl font-bold">ELD Log Sheets</h1>
-        <div className="bg-gray-200 shadow-lg w-[90%]">
-          <ELDLogChart totalMiles={totalMiles} cycle={cycle} />
+        <div className="w-[90%] flex flex-col gap-6">
+          {Array.from({ length: calcSheet() }).map((_, index) => (
+            <div
+              key={index}
+              className="shadow-lg border-2 p-4 rounded-lg bg-white"
+            >
+              <ELDLogChart totalMiles={totalMiles} cycle={cycle} />
+            </div>
+          ))}
         </div>
       </div>
     </div>
