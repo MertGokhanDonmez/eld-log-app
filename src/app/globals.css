@@ -2,5 +2,25 @@
 @import 'mapbox-gl/dist/mapbox-gl.css';
 
 .custom-margin {
-    margin-bottom: 1.5rem; /* 24px */
+  margin-bottom: 1.5rem;
+  /* 24px */
+}
+
+.loader {
+  border: 4px solid rgb(255, 255, 255);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: rgb(71, 137, 251);
+  animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

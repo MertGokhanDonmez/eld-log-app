@@ -1,8 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 
-const ELDLogChart = ({ totalMiles, cycle }) => {
+const ELDLogChart = ({ totalMiles, cycle, dropoff, pickup }) => {
   const chartRef = useRef(null);
+
+  const capitalizeFirstLetter = (string) => {
+    if (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+  };
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
@@ -184,7 +190,57 @@ const ELDLogChart = ({ totalMiles, cycle }) => {
 
   return (
     <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-      <div className="text-xl font-bold mb-2">ELD Log Chart</div>
+      <div className="flex items-center mb-6">
+        <span className="text-2xl font-bold">Drivers Daily Log</span>
+        <span className="text-gray-500 text-sm ml-2">(24 hours)</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="flex items-baseline gap-2">
+          <h3 className="text-gray-700 text-xl font-bold">From:</h3>
+          <p className="">{capitalizeFirstLetter(pickup)}</p>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <h3 className="text-gray-700 text-xl font-bold">To:</h3>
+          <p className="">{capitalizeFirstLetter(dropoff)}</p>
+        </div>
+        <div>
+          <label className="block text-gray-700 font-bold">
+            Total Miles Driving Today:
+          </label>
+          <input type="text" className="w-full border rounded p-2" />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-bold">
+            Total Mileage Today:
+          </label>
+          <input type="text" className="w-full border rounded p-2" />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-bold">
+            Truck/Tractor and Trailer Numbers or License Plates/State:
+          </label>
+          <input type="text" className="w-full border rounded p-2" />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-bold">
+            Name of Carrier or Carriers:
+          </label>
+          <input type="text" className="w-full border rounded p-2" />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-bold">
+            Main Office Address:
+          </label>
+          <input type="text" className="w-full border rounded p-2" />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-bold">
+            Home Terminal Address:
+          </label>
+          <input type="text" className="w-full border rounded p-2" />
+        </div>
+      </div>
       <div className="w-full h-96 bg-white rounded-lg shadow-inner">
         <canvas ref={chartRef} /> {/* Increased width and height */}
       </div>

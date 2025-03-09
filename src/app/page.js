@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
-import ELDLogChart from "./ELDLogChart"; // Import the new ELDLogChart component
+import ELDLogChart from "../components/ELDLogChart"; // Import the new ELDLogChart component
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const MAPBOX_API_KEY =
   "pk.eyJ1IjoiZ29rZXluIiwiYSI6ImNtN3kzc3hmbzA0MDEycXM1ajM3cnZiZDcifQ.UzQmL2mATngTDUTgs1vNDg";
@@ -19,7 +20,10 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [map, setMap] = useState(null);
   const [menuOpen, setMenuOpen] = useState(true);
-  const [totalMiles, setTotalMiles] = useState(0); // Add state for total miles
+  const [totalMiles, setTotalMiles] = useState(0);
+  const [loading, setLoading] = useState(false); // loading check
+  const [showLogs, setShowLogs] = useState(false);
+  const [markers, setMarkers] = useState([]);
 
   useEffect(() => {
     const initializeMap = new mapboxgl.Map({
@@ -69,8 +73,10 @@ export default function Home() {
 
   const handleRoute = async () => {
     setError(null);
+    setLoading(true); // Start loading animation
     if (!pickup || !dropoff || !current || !cycle) {
       setError("All fields are required.");
+      setLoading(false); // Stop loading animation
       return;
     }
     const pickupLocation = await fetchCoordinates(pickup);
@@ -83,9 +89,11 @@ export default function Home() {
       setDropoffCoords(dropoffLocation);
       await fetchRoute(pickupLocation, dropoffLocation, currentLocation);
       setMenuOpen(false);
+      setShowLogs(true); // Show logs after fetching route
     } else {
       setError("One or both locations could not be found. Try again.");
     }
+    setLoading(false); // Stop loading animation
   };
 
   useEffect(() => {
@@ -94,15 +102,22 @@ export default function Home() {
         return;
       }
 
+      // Remove existing markers
+      markers.forEach((marker) => marker.remove());
+      setMarkers([]);
+
       const bounds = new mapboxgl.LngLatBounds();
       bounds.extend(pickupCoords);
       bounds.extend(dropoffCoords);
       bounds.extend(currentCoords);
       map.fitBounds(bounds, { padding: 50 });
 
-      new mapboxgl.Marker().setLngLat(pickupCoords).addTo(map);
-      new mapboxgl.Marker().setLngLat(dropoffCoords).addTo(map);
-      new mapboxgl.Marker().setLngLat(currentCoords).addTo(map);
+      const newMarkers = [
+        new mapboxgl.Marker().setLngLat(pickupCoords).addTo(map),
+        new mapboxgl.Marker().setLngLat(dropoffCoords).addTo(map),
+        new mapboxgl.Marker().setLngLat(currentCoords).addTo(map),
+      ];
+      setMarkers(newMarkers);
 
       if (map.getLayer("route")) {
         map.removeLayer("route");
@@ -193,9 +208,9 @@ export default function Home() {
                 />
                 <button
                   onClick={handleRoute}
-                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full"
+                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full flex justify-center items-center"
                 >
-                  Show Driving Logs
+                  {loading ? <LoadingSpinner /> : "Show Driving Logs"}
                 </button>
               </div>
               {error && (
@@ -208,16 +223,23 @@ export default function Home() {
           )}
         </div>
       </div>
-      <div className="w-full flex flex-col items-center justify-center">
-        <h1 className="lg:text-4xl font-bold">ELD Log Sheets</h1>
-        <div className="w-[90%] flex flex-col gap-6">
-          {Array.from({ length: calcSheet() }).map((_, index) => (
-            <div key={index} className=" border-2 p-4 rounded-lg bg-white">
-              <ELDLogChart totalMiles={totalMiles} cycle={cycle} />
-            </div>
-          ))}
+      {!loading && (
+        <div className="w-full flex flex-col items-center justify-center">
+          <h1 className="lg:text-4xl font-bold">ELD Log Sheets</h1>
+          <div className="w-[90%] flex flex-col gap-6">
+            {Array.from({ length: calcSheet() }).map((_, index) => (
+              <div key={index} className=" border-2 p-4 rounded-lg bg-white">
+                <ELDLogChart
+                  totalMiles={totalMiles}
+                  cycle={cycle}
+                  dropoff={dropoff}
+                  pickup={pickup}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
