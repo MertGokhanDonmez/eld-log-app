@@ -204,39 +204,38 @@ const ELDLogChart = ({ totalMiles, cycle, dropoff, pickup }) => {
           <h3 className="text-gray-700 text-xl font-bold">To:</h3>
           <p className="">{capitalizeFirstLetter(dropoff)}</p>
         </div>
-        <div>
-          <label className="block text-gray-700 font-bold">
-            Total Miles Driving Today: {totalMiles}
+        <div className="flex items-baseline gap-2">
+          <label className="text-gray-700 font-bold">
+            Total Miles Driving Today:
           </label>
+          <p>{totalMiles}</p>
         </div>
-        <div>
-          <label className="block text-gray-700 font-bold">
+        <div className="flex items-baseline gap-2">
+          <label className="text-gray-700 font-bold">
             Total Mileage Today:
           </label>
-          <input type="text" className="w-full border rounded p-2" />
+          <p>{totalMiles}</p>
         </div>
-        <div>
-          <label className="block text-gray-700 font-bold">
+        <div className="flex items-baseline gap-2">
+          <label className="text-gray-700 font-bold">
             Truck/Tractor and Trailer Numbers or License Plates/State: {}
           </label>
         </div>
-        <div>
-          <label className="block text-gray-700 font-bold">
+        <div className="flex items-baseline gap-2">
+          <label className="text-gray-700 font-bold">
             Name of Carrier or Carriers:
           </label>
-          <input type="text" className="w-full border rounded p-2" />
         </div>
-        <div>
-          <label className="block text-gray-700 font-bold">
+        <div className="flex items-baseline gap-2">
+          <label className="text-gray-700 font-bold">
             Main Office Address:
           </label>
-          <input type="text" className="w-full border rounded p-2" />
         </div>
-        <div>
-          <label className="block text-gray-700 font-bold">
+        <div className="flex items-baseline gap-2">
+          <label className="text-gray-700 font-bold">
             Home Terminal Address:
           </label>
-          <input type="text" className="w-full border rounded p-2" />
+          <p>{pickup}</p>
         </div>
       </div>
       <div className="w-full h-96 bg-white rounded-lg shadow-inner">

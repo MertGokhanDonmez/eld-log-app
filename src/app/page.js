@@ -53,7 +53,7 @@ export default function Home() {
       );
       const data = await response.json();
       if (data.features && data.features.length > 0) {
-        return data.features[0].center;
+        return data.features[0];
       }
     } catch (err) {
       setError("Failed to fetch coordinates.");
@@ -81,26 +81,41 @@ export default function Home() {
   const handleRoute = async () => {
     setError(null);
     setLoading(true); // Start loading animation
+
+    // Clear existing markers and route data
+    markers.forEach((marker) => marker.remove());
+    setMarkers([]);
+    setRouteData(null);
+
     if (!pickup || !dropoff || !current || !cycle) {
       setError("All fields are required.");
       setLoading(false); // Stop loading animation
       return;
     }
-    const pickupLocation = await fetchCoordinates(pickup);
-    const dropoffLocation = await fetchCoordinates(dropoff);
-    const currentLocation = await fetchCoordinates(current);
 
-    if (pickupLocation && dropoffLocation && currentLocation) {
-      setCurrentCoords(currentLocation);
-      setPickupCoords(pickupLocation);
-      setDropoffCoords(dropoffLocation);
-      await fetchRoute(pickupLocation, dropoffLocation, currentLocation);
+    const pickupData = await fetchCoordinates(pickup);
+    const dropoffData = await fetchCoordinates(dropoff);
+    const currentData = await fetchCoordinates(current);
+
+    if (pickupData && dropoffData && currentData) {
+      setPickupCoords(pickupData.center);
+      setPickup(pickupData.text);
+      setDropoffCoords(dropoffData.center);
+      setDropoff(dropoffData.text);
+      setCurrentCoords(currentData.center);
+      setCurrent(currentData.text);
+
+      await fetchRoute(
+        pickupData.center,
+        dropoffData.center,
+        currentData.center
+      );
       setMenuOpen(false);
       setShowLogs(true); // Show logs after fetching route
     } else {
       setError("One or both locations could not be found. Try again.");
     }
-    setLoading(false); // Stop loading animation
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -155,7 +170,6 @@ export default function Home() {
   const calcSheet = () => {
     let day = cycle / 24;
     day = Math.ceil(day); // Round up to the nearest integer
-    console.log(day);
     return day;
   };
 
