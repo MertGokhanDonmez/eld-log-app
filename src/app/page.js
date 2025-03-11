@@ -1,8 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import ELDLogChart from "../components/ELDLogChart"; // Import the new ELDLogChart component
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { ArrowDown } from "lucide-react";
 
 const MAPBOX_API_KEY =
   "pk.eyJ1IjoiZ29rZXluIiwiYSI6ImNtN3kzc3hmbzA0MDEycXM1ajM3cnZiZDcifQ.UzQmL2mATngTDUTgs1vNDg";
@@ -24,6 +25,12 @@ export default function Home() {
   const [loading, setLoading] = useState(false); // loading check
   const [showLogs, setShowLogs] = useState(false);
   const [markers, setMarkers] = useState([]);
+
+  const scrollRef = useRef(null);
+
+  const handleRefClick = () => {
+    scrollRef.current.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     const initializeMap = new mapboxgl.Map({
@@ -223,8 +230,19 @@ export default function Home() {
           )}
         </div>
       </div>
-      {!loading && (
-        <div className="w-full flex flex-col items-center justify-center">
+      {showLogs && (
+        <button
+          onClick={() => handleRefClick()}
+          className="fixed bottom-5 right-5 z-50 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition"
+        >
+          <ArrowDown size={30} />
+        </button>
+      )}
+      {showLogs && (
+        <div
+          className="w-full flex flex-col items-center justify-center"
+          ref={scrollRef}
+        >
           <h1 className="lg:text-4xl font-bold">ELD Log Sheets</h1>
           <div className="w-[90%] flex flex-col gap-6">
             {Array.from({ length: calcSheet() }).map((_, index) => (

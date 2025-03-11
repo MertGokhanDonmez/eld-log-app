@@ -206,9 +206,8 @@ const ELDLogChart = ({ totalMiles, cycle, dropoff, pickup }) => {
         </div>
         <div>
           <label className="block text-gray-700 font-bold">
-            Total Miles Driving Today:
+            Total Miles Driving Today: {totalMiles}
           </label>
-          <input type="text" className="w-full border rounded p-2" />
         </div>
         <div>
           <label className="block text-gray-700 font-bold">
@@ -218,9 +217,8 @@ const ELDLogChart = ({ totalMiles, cycle, dropoff, pickup }) => {
         </div>
         <div>
           <label className="block text-gray-700 font-bold">
-            Truck/Tractor and Trailer Numbers or License Plates/State:
+            Truck/Tractor and Trailer Numbers or License Plates/State: {}
           </label>
-          <input type="text" className="w-full border rounded p-2" />
         </div>
         <div>
           <label className="block text-gray-700 font-bold">
