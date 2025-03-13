@@ -25,11 +25,13 @@ export default function Home() {
   const [loading, setLoading] = useState(false); // loading check
   const [showLogs, setShowLogs] = useState(false);
   const [markers, setMarkers] = useState([]);
+  const [showDown, setShowDown] = useState(false);
 
   const scrollRef = useRef(null);
 
   const handleRefClick = () => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    setShowDown(false);
   };
 
   useEffect(() => {
@@ -112,6 +114,7 @@ export default function Home() {
       );
       setMenuOpen(false);
       setShowLogs(true); // Show logs after fetching route
+      setShowDown(true); // Show down arrow after fetching route
     } else {
       setError("One or both locations could not be found. Try again.");
     }
@@ -244,7 +247,7 @@ export default function Home() {
           )}
         </div>
       </div>
-      {showLogs && (
+      {showDown && (
         <button
           onClick={() => handleRefClick()}
           className="fixed bottom-5 right-5 z-50 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition"
