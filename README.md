@@ -43,7 +43,7 @@ npm run dev
 1. Open the app in your browser.
 2. Create a new trip log.
 3. Select the route using the interactive map.
-4. Save and manage logs.
+4. See trip on the log sheet.
 
 ## Contributing
 Feel free to open an issue or submit a pull request.
